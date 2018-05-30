@@ -1,0 +1,20 @@
+import java.awt.Graphics;
+import javax.swing.ImageIcon;
+import javax.swing.JLabel;
+
+/**
+ * This is an extended version of a JLabel which draws its icon image using
+ * the ImageDrawer utility.
+ *
+ * @author www.codejava.net
+ * source : http://www.codejava.net/java-se/graphics/drawing-an-image-with-automatic-scaling
+ *
+ */
+public class ScaledImageLabel extends JLabel {
+    protected void paintComponent(Graphics g) {
+        ImageIcon icon = (ImageIcon) getIcon();
+        if (icon != null) {
+            ImageDrawer.drawScaledImage(icon.getImage(), this, g);
+        }
+    }
+}
