@@ -1,3 +1,4 @@
+import TUIO.*;
 import javax.swing.*;
 
 public class AugmentedMapApp {
@@ -19,5 +20,23 @@ public class AugmentedMapApp {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();
         frame.setVisible(true);
+
+
+        int port = 3333;
+
+        //exemple
+        if (args.length==1) {
+            try { port = Integer.parseInt(args[0]); }
+            catch (Exception e) { System.out.println("usage: java TuioDump [port]"); }
+        } else if (args.length>1) System.out.println("usage: java TuioDump [port]");
+
+        CamListener CamListener = new CamListener(labelImage);
+        TuioClient client = new TuioClient(port);
+
+        System.out.println("listening to TUIO messages at port "+port);
+        client.addTuioListener(CamListener);
+
+        client.connect();
     }
+
 }

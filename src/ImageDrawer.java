@@ -50,7 +50,8 @@ public class ImageDrawer {
             x2 = canvasWidth + x1;
             y2 = canvasHeight + y1;
         }
-
         g.drawImage(image, x1, y1, x2, y2, 0, 0, imgWidth, imgHeight, null);
+
+        g.setFont(g.getFont().deriveFont(30f));
     }
 }
