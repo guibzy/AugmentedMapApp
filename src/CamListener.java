@@ -2,55 +2,58 @@ import TUIO.*;
 
 import javax.swing.*;
 import java.util.HashSet;
-import java.util.Set;
 import java.util.Iterator;
 import java.util.Set;
 
 public class CamListener implements TuioListener {
 
-    private Set<TagString> TagList;
-    private JLabel Map;
+    private Set<Tag> TagList;
+    private ScaledImageLabel Map;
 
-    public CamListener(JLabel Map){
-        setTagList(new HashSet<TagString>());
+    public Set<Tag> getTagList() {
+        return TagList;
+    }
+
+    public void setTagList(Set<Tag> tagList) {
+        TagList = tagList;
+    }
+
+    public CamListener(ScaledImageLabel Map){
+        setTagList(new HashSet<Tag>());
         this.Map = Map;
     }
 
     public void addTuioObject(TuioObject tobj) {
-        System.out.println("add obj "+tobj.getSymbolID()+" ("+tobj.getSessionID()+") "+tobj.getX()+" "+tobj.getY()+" "+tobj.getAngle());
+        // TODO : Récupérer dans la base de données l'objet correspondant au numéro de tag capté
+        // TODO : Pour l'expérimentation on force un string
         TagString toto = new TagString(tobj,"Toto "+tobj.getSymbolID());
-        getTagList().add(toto);
-        this.Map.repaint();
-        // Draw la liste
-        /*for (int i = 0; i < TagList.size(); i++) {
-            TagString titi = TagList.get(i);
-            System.out.println("DEBUT BOUCLE : "+titi.getTuioObject().getSymbolID());
-            titi.drawOnImage(Map,100+titi.getTuioObject().getSymbolID()*100,100+titi.getTuioObject().getSymbolID()*100);
-        }*/
-        Iterator<TagString> crunchifyIterator = TagList.iterator();
-        while (crunchifyIterator.hasNext()) {
-            //System.out.println(crunchifyIterator.next());
-            TagString titi = crunchifyIterator.next();
-            System.out.println("DEBUT BOUCLE : "+titi.getTuioObject().getSymbolID());
-            Runnable run = new Runnable() {
-                @Override
-                public void run() {
-                    titi.drawOnImage(Map,100+titi.getTuioObject().getSymbolID()*100,100+titi.getTuioObject().getSymbolID()*100);
-                }
-            };
-            SwingUtilities.invokeLater(run);
-        }
-        //set
 
+        // Ajout du nouveau tag à la liste des tag présents
+        getTagList().add(toto);
+
+        // Redissiner les éléments présents dans la liste de tag (y compris le nouveau)
+        this.redrawTagList(true);
     }
 
     public void updateTuioObject(TuioObject tobj) {
-        //System.out.println("set obj "+tobj.getSymbolID()+" ("+tobj.getSessionID()+") "+tobj.getX()+" "+tobj.getY()+" "+tobj.getAngle()+" "+tobj.getMotionSpeed()+" "+tobj.getRotationSpeed()+" "+tobj.getMotionAccel()+" "+tobj.getRotationAccel());
+        Iterator<Tag> iter = this.TagList.iterator();
+
+        while (iter.hasNext()) {
+            Tag Tag_temp = iter.next();
+            if(Tag_temp.getTuioObject().getSymbolID() == tobj.getSymbolID()){
+                Tag_temp.setTuioObject(tobj);
+            }
+        }
+
+        // Redissiner les éléments présents dans la liste de tag
+        this.redrawTagList(true);
     }
 
     public void removeTuioObject(TuioObject tobj) {
-        System.out.println("del obj "+tobj.getSymbolID()+" ("+tobj.getSessionID()+")");
-        System.out.println("Taille de la liste : "+TagList.size());
+        this.TagList.removeIf(Tag_temp -> Tag_temp.getTuioObject().getSymbolID() == tobj.getSymbolID());
+
+        // Redissiner les éléments présents dans la liste de tag (pour ne plus afficher celui qui a été enlevé)
+        this.redrawTagList(true);
     }
 
     public void addTuioCursor(TuioCursor tcur) {
@@ -81,11 +84,21 @@ public class CamListener implements TuioListener {
         System.out.println("frame "+frameTime.getFrameID()+" "+frameTime.getTotalMilliseconds());
     }
 
-    public Set<TagString> getTagList() {
-        return TagList;
-    }
+    private void redrawTagList(boolean repaintBeforeDraw){
+        if(repaintBeforeDraw){
+            // Réinitialisation de la carte comme il y a un changement
+            this.Map.repaint();
+        }
 
-    public void setTagList(Set<TagString> tagList) {
-        TagList = tagList;
+        Iterator<Tag> iter = this.TagList.iterator();
+
+        while (iter.hasNext()) {
+            Tag Tag_temp = iter.next();
+            Runnable run = () -> {
+                Tag_temp.drawOnImage(Map, Map.getX0() + (int) (Tag_temp.getTuioObject().getX() * Map.getDrawn_width()), Map.getY0() + (int) (Tag_temp.getTuioObject().getY() * Map.getDrawn_height()));
+
+            };
+            SwingUtilities.invokeLater(run);
+        }
     }
 }

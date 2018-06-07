@@ -19,17 +19,17 @@ public class TagString extends Tag {
         this.font = font;
     }
 
-    public void drawOnImage(JLabel image, int x, int y){
-        Graphics g = image.getGraphics();
-        g.setFont(image.getGraphics().getFont().deriveFont(30f));
-        g.drawString(this.content,x,y);
-    }
-
     public String getContent() {
         return content;
     }
 
     public void setContent(String content) {
         this.content = content;
+    }
+
+    public void drawOnImage(JLabel image, int x, int y){
+        Graphics g = image.getGraphics();
+        g.setFont(image.getGraphics().getFont().deriveFont(30f));
+        g.drawString(this.content,x,y);
     }
 }

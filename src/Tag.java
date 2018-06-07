@@ -1,6 +1,8 @@
 import TUIO.TuioObject;
 
-public class Tag {
+import javax.swing.*;
+
+public abstract class Tag {
 
     private TuioObject TuioObject;
 
@@ -15,4 +17,6 @@ public class Tag {
     public void setTuioObject(TUIO.TuioObject tuioObject) {
         TuioObject = tuioObject;
     }
+
+    public abstract void drawOnImage(JLabel image, int x, int y);
 }

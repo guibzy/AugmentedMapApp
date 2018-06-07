@@ -10,7 +10,7 @@ public class AugmentedMapApp {
 
         // Construct the image
         String path = System.getProperty("user.dir")+"\\ressources\\proto1.png";
-        JLabel labelImage = new ScaledImageLabel();
+        ScaledImageLabel labelImage = new ScaledImageLabel();
         labelImage.setIcon(new ImageIcon(path));
 
         // Add the label to the frame
