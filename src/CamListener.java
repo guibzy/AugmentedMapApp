@@ -1,6 +1,7 @@
 import TUIO.*;
 
 import javax.swing.*;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
@@ -9,6 +10,13 @@ public class CamListener implements TuioListener {
 
     private Set<Tag> TagList;
     private ScaledImageLabel Map;
+    private HashMap<Integer,MapItem> MapItemList;
+
+    public CamListener(ScaledImageLabel Map, HashMap<Integer,MapItem> MapItemList){
+        setTagList(new HashSet<Tag>());
+        this.Map = Map;
+        setMapItemList(MapItemList);
+    }
 
     public Set<Tag> getTagList() {
         return TagList;
@@ -18,15 +26,30 @@ public class CamListener implements TuioListener {
         TagList = tagList;
     }
 
-    public CamListener(ScaledImageLabel Map){
-        setTagList(new HashSet<Tag>());
-        this.Map = Map;
+    public HashMap<Integer,MapItem> getMapItemList() {
+        return MapItemList;
+    }
+
+    public void setMapItemList(HashMap<Integer,MapItem> mapItemList) {
+        MapItemList = mapItemList;
     }
 
     public void addTuioObject(TuioObject tobj) {
-        // TODO : Récupérer dans la base de données l'objet correspondant au numéro de tag capté
-        // TODO : Pour l'expérimentation on force un string
-        TagString toto = new TagString(tobj,"Toto "+tobj.getSymbolID());
+        MapItem MapItem = this.MapItemList.get(tobj.getSymbolID());
+
+        // S'il n'y a pas d'information reconnue pour le tag capturé par la caméra, on ne fait rien
+        if(MapItem == null){
+            return;
+        }
+
+        Tag toto;
+        if("text".equals(MapItem.getType())){
+            toto = new TagString(tobj,this.Map,MapItem);
+        }else if("image".equals(MapItem.getType())){
+            toto = new TagImage(tobj,this.Map,MapItem);
+        }else{
+            return;
+        }
 
         // Ajout du nouveau tag à la liste des tag présents
         getTagList().add(toto);
@@ -36,15 +59,6 @@ public class CamListener implements TuioListener {
     }
 
     public void updateTuioObject(TuioObject tobj) {
-        Iterator<Tag> iter = this.TagList.iterator();
-
-        while (iter.hasNext()) {
-            Tag Tag_temp = iter.next();
-            if(Tag_temp.getTuioObject().getSymbolID() == tobj.getSymbolID()){
-                Tag_temp.setTuioObject(tobj);
-            }
-        }
-
         // Redissiner les éléments présents dans la liste de tag
         this.redrawTagList(true);
     }
