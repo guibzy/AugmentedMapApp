@@ -5,7 +5,7 @@ Application Java qui rentre dans la mise en place d'un dispositif de carte en r�
 À travers cette documentation, vous trouverez :
 - le contexte de la réalisation de cette application
 - Les outils nécessaires au déploiement d'un tel dispositif
-- L'explication du cas d'utilisation fournit via ce dépôt
+- L'explication du cas d'utilisation fourni via ce dépôt
 - Les parties de code à adapter pour personnaliser votre utilisation de cet outil
 ## Contexte
 
