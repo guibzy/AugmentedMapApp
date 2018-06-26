@@ -3,12 +3,15 @@ import java.awt.*;
 import java.awt.font.FontRenderContext;
 import java.awt.geom.AffineTransform;
 
-public class TagString extends Tag {
+/**
+ * Class to use when you want to project String information
+ */
+public class ProjectedInformationString extends ProjectedInformation {
 
     private Font font;
 
-    public TagString(TUIO.TuioObject tuioObject, ScaledImageLabel map, MapItem mapItem) {
-        super(tuioObject, map, mapItem);
+    public ProjectedInformationString(TUIO.TuioObject tuioObject, ScaledImageLabel map, AugmentedInformation augmentedInformation) {
+        super(tuioObject, map, augmentedInformation);
     }
 
     public Font getFont() {
@@ -20,17 +23,16 @@ public class TagString extends Tag {
     }
 
     public void drawOnImage(JLabel image, int x, int y){
-        // Récupération du graphic du calque de l'image pour le modifier
         Graphics2D g =(Graphics2D) image.getGraphics();
 
         //Rotation
         double angle = this.getTuioObject().getAngleDegrees();
 
-        // Définition de la police
-        // TODO : permettre la personnlisation de la taille et du choix de police
+        // Defines the font
+        // TODO : Permits to choose the size and Font to use
         g.setFont(image.getGraphics().getFont().deriveFont(30f));
 
-        String text = getMapItem().getContent();
+        String text = getAugmentedInformation().getContent();
 
         // Predict the width and height of the text that will be drawn
         AffineTransform affinetransform = new AffineTransform();

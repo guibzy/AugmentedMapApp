@@ -6,68 +6,68 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
+/**
+ * Class that handles the reactivision events captured by the webcam. (adding, update of withdraw of a marker)
+ */
 public class CamListener implements TuioListener {
 
-    private Set<Tag> TagList;
+    private Set<ProjectedInformation> projectedInformationList;
     private ScaledImageLabel Map;
-    private HashMap<Integer,MapItem> MapItemList;
+    private HashMap<Integer, AugmentedInformation> MapItemList;
 
-    public CamListener(ScaledImageLabel Map, HashMap<Integer,MapItem> MapItemList){
-        setTagList(new HashSet<Tag>());
+    public CamListener(ScaledImageLabel Map, HashMap<Integer, AugmentedInformation> MapItemList){
+        setProjectedInformationList(new HashSet<ProjectedInformation>());
         this.Map = Map;
         setMapItemList(MapItemList);
     }
 
-    public Set<Tag> getTagList() {
-        return TagList;
+    public Set<ProjectedInformation> getProjectedInformationList() {
+        return projectedInformationList;
     }
 
-    public void setTagList(Set<Tag> tagList) {
-        TagList = tagList;
+    public void setProjectedInformationList(Set<ProjectedInformation> projectedInformationList) {
+        this.projectedInformationList = projectedInformationList;
     }
 
-    public HashMap<Integer,MapItem> getMapItemList() {
+    public HashMap<Integer, AugmentedInformation> getMapItemList() {
         return MapItemList;
     }
 
-    public void setMapItemList(HashMap<Integer,MapItem> mapItemList) {
+    public void setMapItemList(HashMap<Integer, AugmentedInformation> mapItemList) {
         MapItemList = mapItemList;
     }
 
     public void addTuioObject(TuioObject tobj) {
-        MapItem MapItem = this.MapItemList.get(tobj.getSymbolID());
+        AugmentedInformation AugmentedInformation = this.MapItemList.get(tobj.getSymbolID());
 
-        // S'il n'y a pas d'information reconnue pour le tag capturé par la caméra, on ne fait rien
-        if(MapItem == null){
+        // If no information recognized for the captured marker, no need to project something
+        if(AugmentedInformation == null){
             return;
         }
 
-        Tag toto;
-        if("text".equals(MapItem.getType())){
-            toto = new TagString(tobj,this.Map,MapItem);
-        }else if("image".equals(MapItem.getType())){
-            toto = new TagImage(tobj,this.Map,MapItem);
+        ProjectedInformation ProjectedInformation;
+        if("text".equals(AugmentedInformation.getType())){
+            ProjectedInformation = new ProjectedInformationString(tobj,this.Map, AugmentedInformation);
+        }else if("image".equals(AugmentedInformation.getType())){
+            ProjectedInformation = new ProjectedInformationImage(tobj,this.Map, AugmentedInformation);
         }else{
             return;
         }
 
-        // Ajout du nouveau tag à la liste des tag présents
-        getTagList().add(toto);
+        // Adding of the new ProjectedInformation to the list of Projected information currently projected
+        getProjectedInformationList().add(ProjectedInformation);
 
-        // Redissiner les éléments présents dans la liste de tag (y compris le nouveau)
-        this.redrawTagList(true);
+        this.redrawAugmentedInformationList(true);
     }
 
     public void updateTuioObject(TuioObject tobj) {
-        // Redissiner les éléments présents dans la liste de tag
-        this.redrawTagList(true);
+        this.redrawAugmentedInformationList(true);
     }
 
     public void removeTuioObject(TuioObject tobj) {
-        this.TagList.removeIf(Tag_temp -> Tag_temp.getTuioObject().getSymbolID() == tobj.getSymbolID());
+        this.projectedInformationList.removeIf(projectedInformation_temp -> projectedInformation_temp.getTuioObject().getSymbolID() == tobj.getSymbolID());
 
-        // Redissiner les éléments présents dans la liste de tag (pour ne plus afficher celui qui a été enlevé)
-        this.redrawTagList(true);
+        this.redrawAugmentedInformationList(true);
     }
 
     public void addTuioCursor(TuioCursor tcur) {
@@ -98,18 +98,23 @@ public class CamListener implements TuioListener {
         System.out.println("frame "+frameTime.getFrameID()+" "+frameTime.getTotalMilliseconds());
     }
 
-    private void redrawTagList(boolean repaintBeforeDraw){
-        if(repaintBeforeDraw){
-            // Réinitialisation de la carte comme il y a un changement
+    /**
+     * Redraw te list of Augmented Informations
+     *
+     * @param resetBeforeDraw If true, the map will be reset before drawing the Augmented Informations
+     */
+    private void redrawAugmentedInformationList(boolean resetBeforeDraw){
+        if(resetBeforeDraw){
+            // Reset the map is necessary
             this.Map.repaint();
         }
 
-        Iterator<Tag> iter = this.TagList.iterator();
+        Iterator<ProjectedInformation> iter = this.projectedInformationList.iterator();
 
         while (iter.hasNext()) {
-            Tag Tag_temp = iter.next();
+            ProjectedInformation projectedInformation_temp = iter.next();
             Runnable run = () -> {
-                Tag_temp.drawOnImage(Map, Map.getX0() + (int) (Tag_temp.getTuioObject().getX() * Map.getDrawn_width()), Map.getY0() + (int) (Tag_temp.getTuioObject().getY() * Map.getDrawn_height()));
+                projectedInformation_temp.drawOnImage(Map, Map.getX0() + (int) (projectedInformation_temp.getTuioObject().getX() * Map.getDrawn_width()), Map.getY0() + (int) (projectedInformation_temp.getTuioObject().getY() * Map.getDrawn_height()));
 
             };
             SwingUtilities.invokeLater(run);

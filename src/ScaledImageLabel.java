@@ -4,27 +4,47 @@ import javax.swing.JLabel;
 
 /**
  * This is an extended version of a JLabel which draws its icon image using
- * the ImageDrawer utility.
+ * the ImageDrawer utility. I adapted the code of www.codejava.net
  *
- * @author www.codejava.net
  * source : http://www.codejava.net/java-se/graphics/drawing-an-image-with-automatic-scaling
  *
  */
 public class ScaledImageLabel extends JLabel {
 
+    /**
+     * Height of the Image drawn
+     */
     private int drawn_height;
+
+    /**
+     * Width of the Image drawn
+     */
     private int drawn_width;
+
+    /**
+     * X coordinate of the top left corner origin point of the map
+     */
     private int x0;
+
+    /**
+     * Y coordinate of the top left corner origin point of the map
+     */
     private int y0;
 
     protected void paintComponent(Graphics g) {
         ImageIcon icon = (ImageIcon) getIcon();
         if (icon != null) {
-           // ImageDrawer.drawScaledImage(icon.getImage(), this, g);
            this.drawScaledImage(icon.getImage(), this, g);
         }
     }
 
+    /**
+     * Draw the image to scale to the parent canvas size
+     *
+     * @param image
+     * @param canvas
+     * @param g
+     */
     private void drawScaledImage(Image image, Component canvas, Graphics g) {
         int imgWidth = image.getWidth(null);
         int imgHeight = image.getHeight(null);
