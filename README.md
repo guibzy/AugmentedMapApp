@@ -46,20 +46,20 @@ L'application ici présente incarne la première partie de cette Toolbox, offran
 ## Code à adapter
 
 Si vous souhaitez adapter l'outils pour votre usage, vous trouverez dans cette partie toutes les informations nécessaires.
-###Structure de l'application
+### Structure de l'application
 - ressources - *Dossier contenant les fichiers de ressources permettant d'utiliser l'application*
     - images - *Dossier contenant les images que vous souhaitez projeter*
     - maps - *Dossier contenant les cartes (format image) que vous souhaitez utiliser*
 - src - Dossier contenant les fichiers Java nécessaires au fonctionnement de l'application
 
-###Adaptations nécessaires
+### Adaptations nécessaires
 
-####Choix de la carte
+#### Choix de la carte
 Il est possible de choisir la carte servant de support à la projection. Il suffit qu'elle soit un fichier image (.png, .jpg...). Peu importe les dimensions de la carte, son affichage sera adaptée au dimensions de la fenêtre de l'application.
 
 Pour cela, il faut modifier le contenu de la variable `nameMap` (ligne 24) de la fonction `main` du fichier `AugmentedMapApp.java`.
 
-####Choix des informations augmentées
+#### Choix des informations augmentées
 
 Modifier le code de la fonction `fetchAugmentedInformationList` du fichier `AugmentedMapApp.java`. Ci-dessous, un exemple d'information augmentée à ajouter à la carte
 <pre><code>
